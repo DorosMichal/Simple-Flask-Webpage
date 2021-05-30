@@ -64,7 +64,7 @@
             tab += "</table>";
             $(destElem).html(head + tab);
         }).fail(function() {
-            $(destElem).text("{{ 'Error: Could not contact server.' }}");
+            $(destElem).html("<h4 class='text'> Error: Could not contact server.</h4>");
         });
     }</script>
 </body>
