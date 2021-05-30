@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}">
+    <title>USA census</title>
+  </head>
+<body>
+<div class="container-left border-right">
+    {% for state, cities in data.items() %}
+    <div class="state">
+    <h3 class="text">{{state}}</h3>
+        <table class="table table-borderless table-striped">
+        <tr>
+            <th>#</th>
+            <th>city</th>
+            <th>count</th>
+        </tr>
+        {% for city, nb in cities %}
+        <tr>
+            <td>{{loop.index0 + 1}}</td>
+            <td>{{ city }}</td>
+            <td><a href="javascript:details(
+                '{{state}}',
+                '{{city}}',
+                '#result');">{{ nb }}
+            </a></td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
+</div>
+<div class="container-right">
+<span id="result"> <h3 class="text">Choose a city for details</h3></span>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+    function details(state, city, destElem) {
+        $.post('/details', {
+            state: state,
+            city: city,
+        }).done(function(response) {
+            var n = response.length;
+            var head = "<h4 class = 'text'>People Living in " + city + ", " + state + "</h4>";
+            var tab = "<table class='table table-borderless table-striped'>";
+            tab += "<tr><th>name</th><th>last name</th><th>email</th></tr>";
+            for (var el of response){
+                tab += "<tr>";
+                for (var i = 0; i < 3; i++){
+                    tab += "<td>" + el[i] + "</td>";
+                }
+                tab += "</tr>";
+            }
+            tab += "</table>";
+            $(destElem).html(head + tab);
+        }).fail(function() {
+            $(destElem).text("{{ 'Error: Could not contact server.' }}");
+        });
+    }</script>
+</body>
